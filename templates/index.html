@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      input[type="text"] {
+        width: 300px;
+        padding: 5px;
+      }
+
+      button {
+        padding: 5px 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      h2 {
+        margin-top: 20px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        margin: 5px 0;
+        padding: 8px;
+        background-color: #f2f2f2;
+      }
+    </style>
+    <title>Movie Recommender</title>
+  </head>
+  <body>
+    <h1>Movie Recommender</h1>
+    <form id="recommendForm">
+      <label for="movie_title">Enter a Movie Title:</label><br />
+      <input
+        type="text"
+        id="movie_title"
+        name="movie_title"
+        required
+      /><br /><br />
+      <button type="submit">Get Recommendations</button>
+    </form>
+
+    <h2>Recommended Movies:</h2>
+    <ul id="recommendations"></ul>
+
+    <script>
+      document
+        .getElementById("recommendForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const movieTitle = document.getElementById("movie_title").value;
+
+          fetch("/recommend", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ title: movieTitle }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const recommendationsList =
+                document.getElementById("recommendations");
+              recommendationsList.innerHTML = ""; // Clear previous recommendations
+              if (data.length > 0) {
+                data.forEach((movie) => {
+                  const listItem = document.createElement("li");
+                  listItem.textContent = movie;
+                  recommendationsList.appendChild(listItem);
+                });
+              } else {
+                recommendationsList.innerHTML =
+                  "<li>No recommendations found.</li>";
+              }
+            })
+            .catch((error) => console.error("Error:", error));
+        });
+    </script>
+  </body>
+</html>
